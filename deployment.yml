@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: # {insert kind here}
+kind: Deployment
 metadata:
   labels:
     run: djangoserver
@@ -19,11 +19,22 @@ spec:
       labels:
         run: djangoserver
     spec:
+      imagePullSecrets:
+        - name: icr
+      restartPolicy: Always
       containers:
-      - image: # {insert image here}
+      - image: us.icr.io/sn-labs-ssamarthp/djangoserver:1
         imagePullPolicy: Always
         name: djangoserver
         ports:
-        - containerPort: # {insert port here}
+        - containerPort: 8000
           protocol: TCP
-      restartPolicy: Always
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          allowPrivilegeEscalation: false
+          seccompProfile:
+            type: RuntimeDefault
+          capabilities:
+            drop:
+            - ALL
